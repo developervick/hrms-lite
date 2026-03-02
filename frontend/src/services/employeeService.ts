@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
-export const getEmployees = async () => {
-  const { data } = await axios.get(`${API_URL}/employees`);
-  // Ensure we return the array (check if your API wraps it in { employees: [] })
+export const getEmployees = async (date?: string) => {
+  const url = date ? `${API_URL}/employees/?date=${date}` : `${API_URL}/employees/`;
+  const { data } = await axios.get(url);
   return data;
 };
 
@@ -16,3 +16,4 @@ export const createEmployee = async (employee: { name: string; email: string; de
 export const deleteEmployee = async (id: string) => {
   await axios.delete(`${API_URL}/employees/${id}/`);
 };
+

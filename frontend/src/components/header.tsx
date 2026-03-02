@@ -23,8 +23,7 @@ export default function Header({ setSidebarOpen }: HeaderProps) {
 
                 {/* Brand Logo (Optional: hidden on mobile if sidebar has it) */}
                 <div className="flex items-center gap-2 lg:hidden">
-                    <div className="h-8 w-8 rounded-md bg-indigo-600" />
-                    <span className="text-lg font-bold tracking-tight text-slate-900">App</span>
+                    <span className="text-lg font-bold tracking-tight text-slate-900">HRMS Lite</span>
                 </div>
             </div>
 

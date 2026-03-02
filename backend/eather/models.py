@@ -26,7 +26,7 @@ class Department(models.Model):
 class Attendance(models.Model):
     employee = models.ForeignKey(Employee, on_delete=models.CASCADE)
     date = models.DateField()
-    status = models.BooleanField(default=False)  # True for present, False for absent
+    status = models.CharField(max_length=10, null=True, blank=True, default="Present")  # True for present, False for absent(default=False)  # True for present, False for absent
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)

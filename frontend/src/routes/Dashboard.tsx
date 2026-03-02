@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Users, CalendarCheck, UserMinus, Clock, Loader2, AlertCircle, ArrowUpRight } from "lucide-react";
+import { Users, CalendarCheck, UserMinus, Clock, Loader2, ArrowUpRight } from "lucide-react";
 import { getDashboardStats, getRecentAttendance, getDeptDistribution } from "../services/dashboardService";
 
 const colors = [
@@ -90,9 +90,9 @@ export default function Dashboard() {
                 {recentAttendance.recentAttendance?.map((log: any) => (
                   <TableRow 
                     key={log.id} 
-                    name={log.employeeName} 
+                    name={log.employee__full_name || "--"} 
                     status={log.status} 
-                    time={log.checkInTime || "--:--"} 
+                    time={log.updated_at ? new Date(log.updated_at).toLocaleTimeString() : "--:--"} 
                     color={log.status === 'Present' ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"} 
                   />
                 ))}

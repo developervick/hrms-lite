@@ -5,12 +5,20 @@ import re
 from django.db import IntegrityError
 from django.db.models import Avg, Case, When, IntegerField, Count
 from rest_framework.decorators import api_view
+from datetime import datetime
+
 
 
 class EmployeeListView(APIView):
     
     def get(self, request):
         try:
+            if request.query_params.get('date'):
+                date = request.query_params.get('date')
+                datetime_object = datetime.strptime(date, "%Y-%m-%d")
+                employees = Employee.objects.filter(deleted_at__isnull=True, updated_at__date=datetime_object).values('id', 'full_name', 'email', 'department__name')
+                return Response({'employees': employees})
+            
             employees = Employee.objects.all().values('id', 'full_name', 'email', 'department__name')
             return Response({'employees': employees})
         except Exception as e:
@@ -138,7 +146,7 @@ class AttendanceListView(APIView):
             page_size = int(request.query_params.get('page_size', 10))
             offset = (page - 1) * page_size
 
-            attendance_records = Attendance.objects.filter(employee__id=employee_id).values('id', 'date', 'status').order_by('-date')[offset:offset + page_size]
+            attendance_records = Attendance.objects.filter(employee__id=employee_id).values('id', 'date', 'status', 'updated_at').order_by('-updated_at')[offset:offset + page_size]
             count = Attendance.objects.filter(employee__id=employee_id).count()
             return Response({'attendance_records': attendance_records, 'total_count': count})
         
@@ -151,7 +159,6 @@ class AttendanceListView(APIView):
         try:
             date = request.data.get('date')
             status = request.data.get('status')
-
             if not employee_id or not date or status is None:
                 return Response({'error': 'employee_id, date and status are required'}, status=400)
 
@@ -175,8 +182,9 @@ class AttendanceListView(APIView):
     
     def put(self, request, id):
         try:
+            print(request.data.get('status'), "-------------")
             attendance = Attendance.objects.get(pk=id)
-            attendance.status = not attendance.status
+            attendance.status = request.data.get('status', attendance.status)
             attendance.save()
             data = {
                 'id': attendance.id,
@@ -305,7 +313,7 @@ class StatisticsView(APIView):
 @api_view(['GET'])
 def recent_attendence(request):
     try:
-        recent_attendance = Attendance.objects.filter(deleted_at__isnull=False).order_by('-date')[:10].values('id', 'date', 'status')
+        recent_attendance = Attendance.objects.filter().prefetch_related('employee').order_by('-updated_at')[:10].values('id', 'date', 'status', 'employee__full_name', 'updated_at')
         return Response({'recentAttendance': recent_attendance})
     
     except Exception as e:
@@ -318,9 +326,9 @@ def recent_attendence(request):
 def dashboar_stats(request):
     try:
         total_employees = Employee.objects.filter(deleted_at__isnull=True).count()
-        present_today = Attendance.objects.filter(deleted_at__isnull=True, status=True).count()
-        on_leave = Attendance.objects.filter(deleted_at__isnull=True, status=False).count()
-        pending = Attendance.objects.filter(deleted_at__isnull=True, status=None).count()
+        present_today = Attendance.objects.filter(deleted_at__isnull=True, status='Present').count()
+        on_leave = Attendance.objects.filter(deleted_at__isnull=True, status='On Leave').count()
+        pending = Attendance.objects.filter(deleted_at__isnull=True, status='Absent').count()
         return Response({'totalEmployees': total_employees, 'presentToday': present_today, 'onLeave': on_leave, 'pending': pending})
     
     except Exception as e:
@@ -341,6 +349,19 @@ def get_departments(request):
             entry['total'] = total_employees
 
         return Response({'stats': results})
+    except Exception as e:
+        print(e)
+        return Response({'error': "Something went wrong"}, status=500)
+    
+
+@api_view(['GET'])
+def get_attandances(request):
+    try:
+        date = request.query_params.get('date')
+        datetime_object = datetime.strptime(date, "%Y-%m-%d")
+        attendances = Attendance.objects.filter(deleted_at__isnull=True, date=datetime_object).prefetch_related('employee').order_by('-updated_at').values('id', 'employee__full_name', 'employee__id', 'date', 'status')
+        return Response({'attendances': attendances})
+
     except Exception as e:
         print(e)
         return Response({'error': "Something went wrong"}, status=500)
