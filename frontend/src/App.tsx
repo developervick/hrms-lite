@@ -2,10 +2,11 @@ import './App.css'
 import { Toaster } from 'react-hot-toast' // Ensure curly braces
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Layout from './components/layout'
-import Dashboard from './components/routes/Dashboard'
-import Employees from './components/routes/Employees'
-import Attendance from './components/routes/Attendance'
-import Departments from './components/routes/Departments'
+import Dashboard from './routes/Dashboard'
+import Employees from './routes/Employees'
+import Attendance from './routes/Attendance'
+import Departments from './routes/Departments'
+import EmployeeDetails from './routes/EmployeeDetails'
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
           <Route path="attendance" element={<Attendance />} />
           <Route path="departments" element={<Departments />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="employees/:id" element={<EmployeeDetails />} />
         </Route>
       </Routes>
     </>
