@@ -1,0 +1,72 @@
+# --- Stage 1: Builder ---
+FROM python:3.11.7-slim-bullseye as builder
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+# Copy requirements from the backend folder
+# (Assumes build context is the project root)
+COPY requirements.txt .
+RUN pip install --upgrade pip wheel && \
+    pip install --no-cache-dir -r requirements.txt
+
+# --- Stage 2: Runtime ---
+FROM python:3.11.7-slim-bullseye
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH" \
+    PYTHONPATH="/app" \
+    PORT=8000
+
+# Create non-root user
+RUN groupadd -g 1001 django && \
+    useradd -r -u 1001 -g django django
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    curl \
+    netcat-traditional \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy virtual env from builder
+COPY --from=builder /opt/venv /opt/venv
+
+# Copy all contents of the backend directory into /app
+COPY --chown=django:django . .
+
+# Ensure entrypoint is executable and fix Windows line endings
+RUN sed -i 's/\r$//' /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
+
+USER django
+
+# Verify Django is found (manage.py should be in /app now)
+RUN python manage.py --version
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:$PORT/health/ || exit 1
+
+# Using the entrypoint script you have in the folder
+ENTRYPOINT ["sh", "entrypoint.sh"]
+
+# Default command if entrypoint doesn't specify one
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
