@@ -87,6 +87,111 @@ A comprehensive, lightweight HR management solution designed to streamline emplo
 └── README.md       # Project documentation
 ```
 
+# 🚀 Deployment Guide: HRMS Lite
+
+This guide outlines the step-by-step process for deploying the **HRMS Lite** application using Railway (Backend & Database) and Vercel (Frontend).
+
+---
+
+💻 Frontend Deployment (Vercel)
+Vercel is optimized for Vite projects and offers seamless GitHub integration.
+
+1. Project Import
+Log in to Vercel and click Add New > Project.
+Import your GitHub repository hrms-lite.
+
+2. Framework Configuration
+Under Project Settings, set the Framework Preset to Vite.
+
+Set the Root Directory to frontend.
+
+3. Environment Variables (Optional but Recommended)
+If your frontend uses an API base URL variable (e.g., VITE_API_URL), add it here:
+
+Key: VITE_API_URL
+
+Value: https://your-railway-backend-url.up.railway.app
+
+4. Deploy
+Click Deploy.
+
+Once finished, copy the provided .vercel.app URL.
+
+Important: Go back to your Railway Backend Variables and update FRONTEND_URL, CSRF_TRUSTED_ORIGINS, and ALLOWED_HOSTS with this live URL.
+
+## 🏗️ Backend & Database Deployment (Railway)
+
+Railway handles both your PostgreSQL database and the Django application.
+
+### 1. Project Setup
+1. Create a free tier account on [Railway.app](https://railway.app/).
+2. Create a **New Project**.
+3. Click **Add Service** -> **Database** -> **Add PostgreSQL**.
+4. Wait for the database to deploy.
+
+### 2. Deploying the Django Service
+1. Click **New** -> **GitHub Repo** -> Select your `hrms-lite` repository.
+2. Once the service is created, go to **Service Settings** > **Source**.
+3. Set the **Root Directory** to `backend`.
+
+### 3. Networking & Build Configuration
+1. **Domain:** Go to the **Settings** tab > **Networking** > Click **Generate Domain** (Save this URL for the frontend setup).
+2. **Build Customization:**
+   - Go to the **Settings** tab > **Build**.
+   - Select **Docker** as the build interface.
+   - Set the **Dockerfile Location** to `backend/Dockerfile`.
+
+### 4. Environment Variables
+Go to the **Variables** tab, click **Edit Raw**, and paste the following JSON/List (ensuring you replace the placeholder values with your actual Railway Database credentials and Vercel URL):
+
+```env
+DEBUG=True
+DATABASE_URL=postgres://myuser:mypassword@db:5432/mydatabase
+PGUSER=myuser
+PGPASSWORD=mypassword
+PGDATABASE=mydatabase
+PGPORT=5432
+PGHOST=db
+FRONTEND_URL="[https://your-vercel-app-url.vercel.app](https://your-vercel-app-url.vercel.app)"
+CSRF_TRUSTED_ORIGINS="[https://your-vercel-app-url.vercel.app](https://your-vercel-app-url.vercel.app)"
+ALLOWED_HOSTS="your-railway-domain.up.railway.app"
+SECRET_KEY="your-very-secure-random-secret-key"
+
+# Database Specific Variable
+POSTGRES_DB=mydatabase
+```
+
+🔄 Final Configuration & Redeployment
+To ensure the Frontend and Backend communicate correctly, follow these final steps to link the two services.
+
+1. Configure Frontend Environment Variables
+   1. Go to your Vercel Dashboard and select your project.
+   2. Navigate to Settings > Environment Variables.
+   3. Add a new variable:
+   4. Key: VITE_API_URL
+   5. Value: https://your-backend-service.up.railway.app (Your public Railway host).
+   6. Click Save.
+
+2. Redeploy Frontend
+   1. Environment variables in Vite are injected at build time. To apply the change:
+   2. Go to the Deployments tab in Vercel.
+   3. Click the three dots ... on your latest deployment.
+   4. Select Redeploy (ensure "Use existing Build Cache" is unchecked for a clean build).
+
+3. Sync Backend Settings (Railway)
+   1. Ensure your Backend allows requests from your new Vercel URL. Go to Railway > Variables and verify:
+   2. ALLOWED_HOSTS: Should include your Railway domain (e.g., api-production.up.railway.app).
+   3. CSRF_TRUSTED_ORIGINS: Must include your Vercel URL (e.g., https://hrms-lite.vercel.app).
+   4. FRONTEND_URL: Set to your Vercel production URL.
+
+### 🔗 Deployment Data Flow
+| Step | Action                      | Outcome                      |
+|------|-----------------------------|------------------------------|
+| 1    | User opens Vercel URL       | React App loads in browser   |
+| 2    | React calls VITE_API_URL    | Request sent to Railway      |
+| 3    | Django checks ALLOWED_HOSTS | Security validation passed   |
+| 4    | Django queries PostgreSQL   | Data retrieved and sent back |
+
 ## 🛠️ Installation & Local Setup
 ### 1. Clone the repository
 ```bash
@@ -130,6 +235,7 @@ Repository: [vivualtvick/hrms-lite](https://github.com/vivualtvick/hrms-lite/mai
 Live App: [HRMS Lite on Vercel](https://hrms-lite-eosin-delta.vercel.app)
 
 Developed with ❤️ by developervick
+
 
 
 
