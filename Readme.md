@@ -105,7 +105,7 @@ Vercel is optimized for Vite projects and offers seamless GitHub integration.
    - Set the Root Directory to frontend.
 
 3. Environment Variables (Optional but Recommended)
-   - If your frontend uses an API base URL variable (e.g., VITE_API_URL), add it here:
+   - frontend uses an API base URL variable (e.g., VITE_API_URL), we can leave it blank for now:
    - Key: VITE_API_URL
    - Value: https://your-railway-backend-url.up.railway.app
 
@@ -113,8 +113,6 @@ Vercel is optimized for Vite projects and offers seamless GitHub integration.
    - Click Deploy.
 
 Once finished, copy the provided .vercel.app URL.
-
-Important: Go back to your Railway Backend Variables and update FRONTEND_URL, CSRF_TRUSTED_ORIGINS, and ALLOWED_HOSTS with this live URL.
 
 ## 🏗️ Backend & Database Deployment (Railway)
 
@@ -168,6 +166,8 @@ To ensure the Frontend and Backend communicate correctly, follow these final ste
    - Key: VITE_API_URL
    - Value: https://your-backend-service.up.railway.app (Your public Railway host).
    - Click Save.
+   - Important: Go back to your Railway Backend Variables and update FRONTEND_URL, CSRF_TRUSTED_ORIGINS with this live URL.
+
 
 2. Redeploy Frontend
    - Environment variables in Vite are injected at build time. To apply the change:
@@ -247,6 +247,7 @@ Live App: [HRMS Lite on Vercel](https://hrms-lite-eosin-delta.vercel.app)
    - Case Sensitivity: Ensure your imports match your filenames exactly (e.g., App.jsx vs app.jsx).
 
 Developed with ❤️ by developervick [Vivek Kustwar](https://linkedin.com/in/vivek-kustwar)
+
 
 
 
