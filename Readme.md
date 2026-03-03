@@ -97,20 +97,20 @@ This guide outlines the step-by-step process for deploying the **HRMS Lite** app
 Vercel is optimized for Vite projects and offers seamless GitHub integration.
 
 1. Project Import
-   1.Log in to Vercel and click Add New > Project.
-   Import your GitHub repository hrms-lite.
+   - Log in to Vercel and click Add New > Project.
+   - Import your GitHub repository hrms-lite.
    
 3. Framework Configuration
-   1. Under Project Settings, set the Framework Preset to Vite.
-   2. Set the Root Directory to frontend.
+   - Under Project Settings, set the Framework Preset to Vite.
+   - Set the Root Directory to frontend.
 
 3. Environment Variables (Optional but Recommended)
-   1. If your frontend uses an API base URL variable (e.g., VITE_API_URL), add it here:
-   2. Key: VITE_API_URL
-   3. Value: https://your-railway-backend-url.up.railway.app
+   - If your frontend uses an API base URL variable (e.g., VITE_API_URL), add it here:
+   - Key: VITE_API_URL
+   - Value: https://your-railway-backend-url.up.railway.app
 
 4. Deploy
-   1. Click Deploy.
+   - Click Deploy.
 
 Once finished, copy the provided .vercel.app URL.
 
@@ -162,24 +162,24 @@ POSTGRES_DB=mydatabase
 To ensure the Frontend and Backend communicate correctly, follow these final steps to link the two services.
 
 1. Configure Frontend Environment Variables
-   1. Go to your Vercel Dashboard and select your project.
-   2. Navigate to Settings > Environment Variables.
-   3. Add a new variable:
-   4. Key: VITE_API_URL
-   5. Value: https://your-backend-service.up.railway.app (Your public Railway host).
-   6. Click Save.
+   - Go to your Vercel Dashboard and select your project.
+   - Navigate to Settings > Environment Variables.
+   - Add a new variable:
+   - Key: VITE_API_URL
+   - Value: https://your-backend-service.up.railway.app (Your public Railway host).
+   - Click Save.
 
 2. Redeploy Frontend
-   1. Environment variables in Vite are injected at build time. To apply the change:
-   2. Go to the Deployments tab in Vercel.
-   3. Click the three dots ... on your latest deployment.
-   4. Select Redeploy (ensure "Use existing Build Cache" is unchecked for a clean build).
+   - Environment variables in Vite are injected at build time. To apply the change:
+   - Go to the Deployments tab in Vercel.
+   - Click the three dots ... on your latest deployment.
+   - Select Redeploy (ensure "Use existing Build Cache" is unchecked for a clean build).
 
 3. Sync Backend Settings (Railway)
-   1. Ensure your Backend allows requests from your new Vercel URL. Go to Railway > Variables and verify:
-   2. ALLOWED_HOSTS: Should include your Railway domain (e.g., api-production.up.railway.app).
-   3. CSRF_TRUSTED_ORIGINS: Must include your Vercel URL (e.g., https://hrms-lite.vercel.app).
-   4. FRONTEND_URL: Set to your Vercel production URL.
+   - Ensure your Backend allows requests from your new Vercel URL. Go to Railway > Variables and verify:
+   - ALLOWED_HOSTS: Should include your Railway domain (e.g., api-production.up.railway.app).
+   - CSRF_TRUSTED_ORIGINS: Must include your Vercel URL (e.g., https://hrms-lite.vercel.app).
+   - FRONTEND_URL: Set to your Vercel production URL.
 
 ### 🔗 Deployment Data Flow
 | Step | Action                      | Outcome                      |
@@ -233,20 +233,21 @@ Live App: [HRMS Lite on Vercel](https://hrms-lite-eosin-delta.vercel.app)
 
 ## 🛠️ Quick Troubleshooting
 1. Connection & CORS
-   1. Vercel URL: Must be in CSRF_TRUSTED_ORIGINS (with https://) and ALLOWED_HOSTS (without https://) in Railway.
-   2. Vite Variables: Ensure your variable starts exactly with VITE_ (e.g., VITE_API_URL).
-   3. Redeploy: Vercel requires a redeploy after adding environment variables to inject them into the build.
+   - Vercel URL: Must be in CSRF_TRUSTED_ORIGINS (with https://) and ALLOWED_HOSTS (without https://) in Railway.
+   - Vite Variables: Ensure your variable starts exactly with VITE_ (e.g., VITE_API_URL).
+   - Redeploy: Vercel requires a redeploy after adding environment variables to inject them into the build.
 
 2. Database & API
-   1. Migrations: If you see "Table not found," run python manage.py migrate in the Railway CMD/Shell.
-   2. Internal URL: Ensure DATABASE_URL matches the string in your Railway Postgres variables.
-   3. Debug Mode: If DEBUG=False, your ALLOWED_HOSTS must be 100% accurate or the site will return a 500 error.
+   - Migrations: If you see "Table not found," run python manage.py migrate in the Railway CMD/Shell.
+   - Internal URL: Ensure DATABASE_URL matches the string in your Railway Postgres variables.
+   - Debug Mode: If DEBUG=False, your ALLOWED_HOSTS must be 100% accurate or the site will return a 500 error.
 
 3. Build Failures
-   1. Root Directory: Double-check Vercel is pointing to /frontend and Railway is pointing to /backend.
-   2. Case Sensitivity: Ensure your imports match your filenames exactly (e.g., App.jsx vs app.jsx).
+   - Root Directory: Double-check Vercel is pointing to /frontend and Railway is pointing to /backend.
+   - Case Sensitivity: Ensure your imports match your filenames exactly (e.g., App.jsx vs app.jsx).
 
 Developed with ❤️ by developervick [Vivek Kustwar](https://linkedin.com/in/vivek-kustwar)
+
 
 
 
