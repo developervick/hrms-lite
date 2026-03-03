@@ -93,27 +93,24 @@ This guide outlines the step-by-step process for deploying the **HRMS Lite** app
 
 ---
 
-💻 Frontend Deployment (Vercel)
+## 💻 Frontend Deployment (Vercel)
 Vercel is optimized for Vite projects and offers seamless GitHub integration.
 
 1. Project Import
-Log in to Vercel and click Add New > Project.
-Import your GitHub repository hrms-lite.
-
-2. Framework Configuration
-Under Project Settings, set the Framework Preset to Vite.
-
-Set the Root Directory to frontend.
+   1.Log in to Vercel and click Add New > Project.
+   Import your GitHub repository hrms-lite.
+   
+3. Framework Configuration
+   1. Under Project Settings, set the Framework Preset to Vite.
+   2. Set the Root Directory to frontend.
 
 3. Environment Variables (Optional but Recommended)
-If your frontend uses an API base URL variable (e.g., VITE_API_URL), add it here:
-
-Key: VITE_API_URL
-
-Value: https://your-railway-backend-url.up.railway.app
+   1. If your frontend uses an API base URL variable (e.g., VITE_API_URL), add it here:
+   2. Key: VITE_API_URL
+   3. Value: https://your-railway-backend-url.up.railway.app
 
 4. Deploy
-Click Deploy.
+   1. Click Deploy.
 
 Once finished, copy the provided .vercel.app URL.
 
@@ -250,6 +247,7 @@ Live App: [HRMS Lite on Vercel](https://hrms-lite-eosin-delta.vercel.app)
    2. Case Sensitivity: Ensure your imports match your filenames exactly (e.g., App.jsx vs app.jsx).
 
 Developed with ❤️ by developervick [Vivek Kustwar](https://linkedin.com/in/vivek-kustwar)
+
 
 
 
