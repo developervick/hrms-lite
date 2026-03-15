@@ -1,2 +1,5 @@
 /env
 *.pyc
+.env.*
+.env.local
+.env.prod
