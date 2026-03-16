@@ -1,0 +1,98 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-backend:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Check backend changes
+        id: backend-changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          echo "$CHANGED"
+
+          # Deploy if backend files changed OR root files changed
+          if echo "$CHANGED" | grep -qE '^backend/|^docker-compose.prod.yml|^\.env'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup SSH key
+        if: steps.backend-changes.outputs.changed == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 400 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy backend
+        if: steps.backend-changes.outputs.changed == 'true'
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd ~/your-repo-name &&
+            git pull origin main &&
+            docker compose -f docker-compose.prod.yml up -d --no-deps --build backend &&
+            docker compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
+          '
+
+      - name: Verify backend
+        if: steps.backend-changes.outputs.changed == 'true'
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            docker compose -f docker-compose.prod.yml ps backend
+          '
+
+  deploy-frontend:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Check frontend changes
+        id: frontend-changes
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1 HEAD)
+          echo "$CHANGED"
+
+          # Deploy if frontend files changed OR root files changed
+          if echo "$CHANGED" | grep -qE '^frontend/|^docker-compose.prod.yml|^\.env'; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup SSH key
+        if: steps.frontend-changes.outputs.changed == 'true'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 400 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy frontend
+        if: steps.frontend-changes.outputs.changed == 'true'
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            cd ~/your-repo-name &&
+            git pull origin main &&
+            docker compose -f docker-compose.prod.yml up -d --no-deps --build frontend
+          '
+
+      - name: Verify frontend
+        if: steps.frontend-changes.outputs.changed == 'true'
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
+            docker compose -f docker-compose.prod.yml ps frontend
+          '
+
