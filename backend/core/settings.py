@@ -140,10 +140,7 @@ STATIC_URL = 'static/'
 FRONTEND_URL = os.environ.get('FRONTEND_URL', "")
 
 
-CORS_ALLOWED_ORIGINS = [
-    os.environ.get('CORS_ALLOWED_ORIGINS', "").split(',')
-]
-
+CORS_ALLOWED_ORIGINS = os.environ.get('CORS_ALLOWED_ORIGINS', "").split(',')
 
 # Logging
 LOGGING = {
