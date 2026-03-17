@@ -23,6 +23,8 @@ services:
         - VITE_SOME_OTHER_KEY=${VITE_SOME_OTHER_KEY}
     ports:
       - "80:80"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
     env_file:
