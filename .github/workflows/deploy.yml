@@ -38,7 +38,7 @@ jobs:
         if: steps.backend-changes.outputs.changed == 'true'
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
-            cd ~/hrms-lite &&
+            cd hrms-lite &&
             git pull origin main &&
             docker compose -f docker-compose.prod.yml up -d --no-deps --build backend &&
             docker compose -f docker-compose.prod.yml exec -T backend python manage.py migrate
@@ -84,7 +84,7 @@ jobs:
         if: steps.frontend-changes.outputs.changed == 'true'
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} '
-            cd ~/hrms-lite &&
+            cd hrms-lite &&
             git pull origin main &&
             docker compose -f docker-compose.prod.yml up -d --no-deps --build frontend
           '
