@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Fetch all attendance records for a specific date
 export const getAttendance = async (selectedDate: string) => {
